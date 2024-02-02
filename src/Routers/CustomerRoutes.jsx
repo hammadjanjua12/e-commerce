@@ -9,7 +9,6 @@ import ProductDetails from "../Customer/components/ProductDetails/ProductDetails
 import Checkout from "../Customer/components/Checkout/Checkout";
 import Order from "../Customer/components/Order/Order";
 import OrderDetails from "../Customer/components/Order/OrderDetails";
-
 const CustomerRoutes = () => {
   return (
     <div>
@@ -17,6 +16,9 @@ const CustomerRoutes = () => {
         <Navigation />
       </div>
       <Routes>
+      <Route path="/login" element={<HomePage/>}></Route>
+      <Route path="/register" element={<HomePage />}></Route>
+
         <Route path="/" element={<HomePage />}></Route>
         <Route path="/cart" element={<Cart/>}></Route>
         <Route

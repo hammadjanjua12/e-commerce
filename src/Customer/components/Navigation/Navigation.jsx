@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Dialog, Popover, Tab, Transition } from "@headlessui/react";
 import {
   Bars3Icon,
@@ -9,8 +9,11 @@ import {
 import Logo from "../../../images/logo.png";
 import { navigation } from "./navigationData";
 import { Avatar, Button, Menu, MenuItem } from "@mui/material";
-import { deepPurple } from "@mui/material/colors";
-import { useNavigate } from "react-router-dom";
+import { purple } from "@mui/material/colors";
+import { useLocation, useNavigate } from "react-router-dom";
+import AuthModal from "../../Auth/AuthModal";
+import { useDispatch, useSelector } from "react-redux";
+import { getUser, logout } from "../../../State/Auth/Action";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -23,6 +26,11 @@ export default function Navigation() {
   const [anchorEl, setAnchorEl] = useState(null);
   const openUserMenu = Boolean(anchorEl);
   const jwt = localStorage.getItem("jwt");
+  //access token
+  const {auth} = useSelector(store=>store);
+  const dispatch = useDispatch();
+  //redirect to home page
+  const location = useLocation();
 
   const handleUserClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -36,11 +44,38 @@ export default function Navigation() {
   const handleCloseMenu = () => {
     setOpenAuthModal(false);
   };
+  const handleClose = () => {
+    setOpenAuthModal(false);
+  };
+
 
   const handleCategoryClick = (category, section, item, close) => {
     navigate(`/${category.id}/${section.id}/${item.id}`);
     close();
   };
+
+  useEffect(()=>{
+    if(jwt){
+        dispatch(getUser(jwt))
+    }
+},[jwt,auth.jwt])
+
+//to close auth modal or form
+  useEffect(()=>{
+    if (auth.user){
+      handleClose()
+    }
+    if(location.pathname === "/login" || location.pathname === "/register"){
+      navigate(-1);
+    }
+  },[auth.user])
+
+  // for logout
+  const handleLougout =()=>{
+    dispatch(logout())
+    handleCloseMenu()
+  }
+
 
   return (
     <div className="bg-white">
@@ -213,9 +248,9 @@ export default function Navigation() {
       </Transition.Root>
 
       <header className="relative bg-white">
-        <p className="flex h-10 items-center justify-center bg-indigo-600 px-4 text-sm font-medium text-white sm:px-6 lg:px-8">
+        {/* <p className="flex h-10 items-center justify-center bg-indigo-600 px-4 text-sm font-medium text-white sm:px-6 lg:px-8">
           Get free delivery on orders over $100
-        </p>
+        </p> */}
 
         <nav aria-label="Top" className="mx-auto ">
           <div className="border-b border-gray-200">
@@ -321,27 +356,17 @@ export default function Navigation() {
                                             className="mt-6 space-y-6 sm:mt-4 sm:space-y-4"
                                           >
                                             {section.items.map((item) => (
-                                              <li
-                                                key={item.name}
-                                                className="flex"
-                                              >
+                                              <li key={item.name} className="flex">
                                                 <p
                                                   onClick={() =>
-                                                    handleCategoryClick(
-                                                      category,
-                                                      section,
-                                                      item,
-                                                      close
-                                                    )
+                                                    handleCategoryClick(category, section, item, close)
                                                   }
                                                   className="cursor-pointer hover:text-gray-800"
                                                 >
                                                   {item.name}
                                                 </p>
-                                                {/* <a
-                                                  href={item.href}
-                                                  className="hover:text-gray-800"
-                                                ></a> */}
+
+                                                {/* <a href={item.href} className="hover:text-gray-800"></a> */}
                                               </li>
                                             ))}
                                           </ul>
@@ -372,7 +397,7 @@ export default function Navigation() {
 
               <div className="ml-auto flex items-center">
                 <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-                  {true ? (
+                  {auth.user?.firstName? (
                     <div>
                       <Avatar
                         className="text-white"
@@ -381,12 +406,12 @@ export default function Navigation() {
                         aria-haspopup="true"
                         aria-expanded={open ? "true" : undefined}
                         sx={{
-                          bgcolor: deepPurple[500],
+                          bgcolor: purple[500],
                           color: "white",
                           cursor: "pointer",
                         }}
                       >
-                        R
+                        {auth.user?.firstName[0].toUpperCase()}
                       </Avatar>
 
                       <Menu
@@ -401,8 +426,8 @@ export default function Navigation() {
                         <MenuItem onClick={handleCloseUserMenu}>
                           Profile
                         </MenuItem>
-                        <MenuItem onClick={()=>navigate("/account/order")}>My Order</MenuItem>
-                        <MenuItem>Logout</MenuItem>
+                        <MenuItem onClick={() => navigate("/account/order")}>My Order</MenuItem>
+                        <MenuItem onClick={handleLougout}>Logout</MenuItem>
                       </Menu>
                     </div>
                   ) : (
@@ -428,7 +453,7 @@ export default function Navigation() {
 
                 {/* Cart */}
                 <div className="ml-4 flow-root lg:ml-6">
-                  <a href="#" className="group -m-2 flex items-center p-2">
+                  <a href="/" className="group -m-2 flex items-center p-2">
                     <ShoppingBagIcon
                       className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                       aria-hidden="true"
@@ -444,6 +469,7 @@ export default function Navigation() {
           </div>
         </nav>
       </header>
+      <AuthModal handleClose={handleClose} open={openAuthModal} />
     </div>
   );
 }

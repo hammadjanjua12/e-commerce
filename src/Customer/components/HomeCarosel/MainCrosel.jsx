@@ -4,9 +4,10 @@ import AliceCarousel from "react-alice-carousel";
 import "react-alice-carousel/lib/alice-carousel.css";
 
 function MainCrosel() {
-  const items = mainCarouselData.map((item) => (
+  const items = mainCarouselData.map((item, index) => (
     <img
-      className="cursor-pointer -z-10"
+      key={index}
+      className="cursor-pointer w-full h-auto"
       role="presentation"
       src={item.image}
       alt=""
@@ -14,13 +15,15 @@ function MainCrosel() {
   ));
 
   return (
-    <AliceCarousel
-      items={items}
-      disableButtonsControls
-      autoPlay
-      autoPlayInterval={1000}
-      infinite
-    />
+    <div style={{ width: "100%", margin: 0 }}>
+      <AliceCarousel
+        items={items}
+        disableButtonsControls
+        autoPlay
+        autoPlayInterval={1000}
+        infinite
+      />
+    </div>
   );
 }
 

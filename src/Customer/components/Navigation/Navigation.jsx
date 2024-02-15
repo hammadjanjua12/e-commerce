@@ -14,6 +14,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import AuthModal from "../../Auth/AuthModal";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser, logout } from "../../../State/Auth/Action";
+import { Link } from 'react-router-dom';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -31,6 +32,9 @@ export default function Navigation() {
   const dispatch = useDispatch();
   //redirect to home page
   const location = useLocation();
+  const {cart} = useSelector((store) => store.cart);
+  const totalItems = cart?.cartItems?.reduce((total, item) => total + item.quantity, 0);
+  // const totalItems = useSelector((store)=>store.cart?.cart)
 
   const handleUserClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -49,8 +53,8 @@ export default function Navigation() {
   };
 
 
-  const handleCategoryClick = (category, section, item, close) => {
-    navigate(`/${category.id}/${section.id}/${item.id}`);
+  const handleCategoryClick = (categories, sections, item, close) => {
+    navigate(`/${categories.id}/${sections.id}/${item.id}`);
     close();
   };
 
@@ -265,10 +269,12 @@ export default function Navigation() {
               </button>
 
               {/* Logo */}
+              <Link to="/">
               <div className="ml-4 flex lg:ml-0">
                 <span className="sr-only">Your Company</span>
                 <img src={Logo} alt="" className="h-8 w-auto mr-5" />
               </div>
+              </Link>
 
               {/* Flyout menus */}
               <Popover.Group className="hidden lg:ml-8 lg:block lg:self-stretch z-10">
@@ -418,7 +424,7 @@ export default function Navigation() {
                         id="basic-menu"
                         anchorEl={anchorEl}
                         open={openUserMenu}
-                        onclose={handleCloseMenu}
+                        onClose={handleCloseMenu}
                         MenuListProps={{
                           "aria-labelledby": "basic-button",
                         }}
@@ -452,18 +458,22 @@ export default function Navigation() {
                 </div>
 
                 {/* Cart */}
+                {/* <Link to="/cart"> */}
                 <div className="ml-4 flow-root lg:ml-6">
                   <a href="/" className="group -m-2 flex items-center p-2">
+                  <Link to="/cart">
                     <ShoppingBagIcon
                       className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                       aria-hidden="true"
                     />
+                    </Link>
                     <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                      2
+                    {totalItems}
                     </span>
-                    <span className="sr-only">items in cart, view bag</span>
+                    <span className="sr-only">{`items in cart, view bag (${totalItems} items)`}</span>
                   </a>
                 </div>
+                {/* </Link> */}
               </div>
             </div>
           </div>

@@ -14,15 +14,15 @@ const HomeSectionCarosel = ({ data, sectionName }) => {
   const responsive = {
     0: {
       items: 1,
-      stagePadding: { paddingLeft: 10, paddingRight: 10 },
+      // stagePadding: { paddingLeft: 10, paddingRight: 10 },
     },
     720: {
       items: 3,
-      stagePadding: { paddingLeft: 10, paddingRight: 10 },
+      // stagePadding: { paddingLeft: 10, paddingRight: 10 },
     },
     1024: {
       items: 5,
-      stagePadding: { paddingLeft: 10, paddingRight: 10 },
+      // stagePadding: { paddingLeft: 10, paddingRight: 10 },
     },
   };
   

@@ -7,6 +7,7 @@ export const color = [
     "Pink",
     "Green",
     "Yellow",
+    "Dark Gray"
   ];
   
   export const filters = [
@@ -21,6 +22,7 @@ export const color = [
         { value: "green", label: "Green" },
         { value: "purple", label: "Purple" },
         { value: "yellow", label: "Yellow" },
+        { value: "DarkGray", label: "DarkGray" },
       ],
     },
     {

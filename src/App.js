@@ -1,23 +1,46 @@
-// import logo from './logo.svg';
-import "./App.css";
-import Navigation from "./Customer/components/Navigation/Navigation";
-import HomePage from "./Customer/components/pages/HomePage/HomePage";
-import Footer from "./Customer/components/Footer/Footer1";
-import Product from "./Customer/components/Product/Product";
-import ProductDetails from "./Customer/components/ProductDetails/ProductDetails";
-import Cart from "./Customer/components/Cart/Cart";
-import Checkout from "./Customer/components/Checkout/Checkout";
-import Order from "./Customer/components/Order/Order";
-import OrderDetails from "./Customer/components/Order/OrderDetails";
-import { Route, Routes } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { CircularProgress, Typography } from "@mui/material";
 import CustomerRouters from "./Routers/CustomerRoutes";
 
+const CircularProgressWithLabel = ({ value, size }) => {
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+      <CircularProgress size={size} variant="determinate" value={value} />
+      <Typography variant="h6" color="textSecondary" style={{ fontSize: 18, marginTop: 8 }}>
+        {`${Math.round(value)}%`}
+      </Typography>
+    </div>
+  );
+};
+
 function App() {
+  const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setProgress((prev) => (prev >= 100 ? 0 : prev + 10));
+    }, 200);
+
+    const loadingTimer = setTimeout(() => {
+      setLoading(false);
+      clearInterval(timer);
+    }, 2000);
+
+    return () => {
+      clearInterval(timer);
+      clearTimeout(loadingTimer);
+    };
+  }, []);
+
   return (
     <div className="">
-      <Routes>
-        <Route path="/*" element={<CustomerRouters />}></Route>
-      </Routes>
+      {loading && (
+        <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }}>
+          <CircularProgressWithLabel value={progress} size={100} />
+        </div>
+      )}
+      {!loading && <CustomerRouters />}
     </div>
   );
 }

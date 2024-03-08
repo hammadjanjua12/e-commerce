@@ -1,6 +1,8 @@
+// App.js
 import React, { useState, useEffect } from "react";
 import { CircularProgress, Typography } from "@mui/material";
-import CustomerRouters from "./Routers/CustomerRoutes";
+import CustomerRoutes from "./Routers/CustomerRoutes";
+import AdminRoutes from "./Routers/AdminRoutes"; // Import your AdminRoutes component
 
 const CircularProgressWithLabel = ({ value, size }) => {
   return (
@@ -16,6 +18,7 @@ const CircularProgressWithLabel = ({ value, size }) => {
 function App() {
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
+  const isAdminRoute = window.location.pathname.startsWith('/admin'); 
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -40,7 +43,11 @@ function App() {
           <CircularProgressWithLabel value={progress} size={100} />
         </div>
       )}
-      {!loading && <CustomerRouters />}
+      {!loading && (
+        <div>
+          {isAdminRoute ? <AdminRoutes /> : <CustomerRoutes showNavigation={!isAdminRoute} />}
+        </div>
+      )}
     </div>
   );
 }

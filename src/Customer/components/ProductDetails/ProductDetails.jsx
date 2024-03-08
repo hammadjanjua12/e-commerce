@@ -10,6 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { findProductsById } from "../../../State/Product/Action";
 import { addItemToCart } from "../../../State/Cart/Action";
+import { Snackbar } from "@mui/material";
 
 const product = {
   name: "Basic Tee 6-Pack",
@@ -69,14 +70,23 @@ export default function ProductDetails() {
   // const [selectedColor, setSelectedColor] = useState();
   const [selectedSize, setSelectedSize] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate()
-  const params = useParams()
-  const dispatch = useDispatch()
-  const {products} = useSelector(store=>store)
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const params = useParams();
+  const dispatch = useDispatch();
+  const { products } = useSelector((store) => store);
 
-  console.log("params------",params.productId)
+  // console.log("params------", params.productId);
   const handleAddTocart = async () => {
     try {
+      if (!selectedSize) {
+        setError("Please select a size");
+        setTimeout(() => {
+          setError(null);
+        }, 10000); // Hide error message after 3 seconds
+        return;
+      }
+
       setLoading(true);
 
       const data = { productId: params.productId, size: selectedSize.name };
@@ -93,10 +103,10 @@ export default function ProductDetails() {
     }
   };
 
-useEffect(()=>{
-  const data = {productId:params.productId}
-dispatch(findProductsById(data))
-},[params.productId])
+  useEffect(() => {
+    const data = { productId: params.productId };
+    dispatch(findProductsById(data));
+  }, [params.productId]);
 
   return (
     <div className="bg-white lg:px-20">
@@ -106,14 +116,14 @@ dispatch(findProductsById(data))
             role="list"
             className="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8"
           >
-            {product.breadcrumbs.map((breadcrumb) => (
-              <li key={breadcrumb.id}>
+            {/* {products?.product?.map((category) => (
+              <li key={category._id}>
                 <div className="flex items-center">
                   <a
-                    href={breadcrumb.href}
+                    href={category.href}
                     className="mr-2 text-sm font-medium text-gray-900"
                   >
-                    {breadcrumb.name}
+                    {products?.category._id}
                   </a>
                   <svg
                     width={16}
@@ -127,14 +137,14 @@ dispatch(findProductsById(data))
                   </svg>
                 </div>
               </li>
-            ))}
+            ))} */}
             <li className="text-sm">
               <a
                 href={product.href}
                 aria-current="page"
                 className="font-medium text-gray-500 hover:text-gray-600"
               >
-                {product.name}
+                {products?.product?.category.name}
               </a>
             </li>
           </ol>
@@ -142,7 +152,7 @@ dispatch(findProductsById(data))
         <section className="grid grid-col-1 lg:grid-cols-2 gap-x-8 gap-y-10 px-4 pt-10">
           {/* Image gallery */}
           <div className="flex flex-col items-center">
-            <div className="overflow-hidden rounded-lg max-w-[30rem] max-h-[35rem]:">
+            <div className="overflow-hidden rounded-lg max-w-[30rem] max-h-[35rem]: mb-8">
               <img
                 src={products.product?.imageUrl}
                 alt={product.images[0].alt}
@@ -150,7 +160,7 @@ dispatch(findProductsById(data))
               />
             </div>
             <div className="flex flex-wrap space-x-5 justify-center">
-              {product.images.map((item) => (
+              {/* {product.images.map((item) => (
                 <div className="aspect-h-2 aspect-w-3 overflow-hidden rounded-lg max-w-[5rem] max-h-[5rem] mt-4">
                   <img
                     src={item.src}
@@ -158,7 +168,7 @@ dispatch(findProductsById(data))
                     className="h-full w-full object-cover object-center"
                   />
                 </div>
-              ))}
+              ))} */}
             </div>
           </div>
           {/* Product info */}
@@ -168,7 +178,7 @@ dispatch(findProductsById(data))
                 {products.product?.brand}
               </h1>
               <h1 className="text-lg lg:text-xl text-gray-900 opacity-60 pt-1">
-              {products.product?.title}
+                {products.product?.title}
               </h1>
             </div>
 
@@ -176,9 +186,19 @@ dispatch(findProductsById(data))
             <div className="mt-4 lg:row-span-3 lg:mt-0">
               <h2 className="sr-only">Product information</h2>
               <div className="flex space-x-5 items-center text-lg lg:text-xl text-gray-900 mt-6">
-                <p className="font-semibold">{products.product?.discountedPrice}</p>
-                <p className="opacity-50">{products.product?.price}</p>
-                <p className="text-green-600 font-semibold">{products.product?.discountPersent}</p>
+                <p className="font-semibold text-lg text-green-600">
+                  <span className="text-sm bg-yellow-500 text-white px-2 py-1 rounded-full mr-1">
+                    Sale
+                  </span>
+                  {products.product?.discountedPrice}
+                </p>
+
+                <p className="opacity-50 line-through">
+                  {products.product?.price}
+                </p>
+                <p className="text-green-600 font-semibold">
+                  {products.product?.discountPersent}
+                </p>
               </div>
 
               {/* Reviews */}
@@ -268,19 +288,41 @@ dispatch(findProductsById(data))
                     </div>
                   </RadioGroup>
                 </div>
+                {/* Snackbar for error message */}
+                <Snackbar
+                  open={Boolean(error)}
+                  autoHideDuration={10000}
+                  onClose={() => setError(null)}
+                  message={error}
+                />
 
                 <Button
-        onClick={handleAddTocart}
-        type="submit"
-        variant="contained"
-        sx={{ px: "2rem", py: "1rem", bgcolor: "#9155fd", position: "relative" }}
-        disabled={loading}
-      >
-        {loading && (
-          <CircularProgress size={24} sx={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)" }} />
-        )}
-        {loading ? "Adding..." : "Add To Cart"}
-      </Button>
+                  onClick={handleAddTocart}
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    px: "2rem",
+                    py: "1rem",
+                    bgcolor: "#9155fd",
+                    position: "relative",
+                    mt: 8, // Add top margin
+                    mb: 4, // Add bottom margin
+                  }}
+                  disabled={loading}
+                >
+                  {loading && (
+                    <CircularProgress
+                      size={24}
+                      sx={{
+                        position: "absolute",
+                        top: "50%",
+                        left: "50%",
+                        transform: "translate(-50%, -50%)",
+                      }}
+                    />
+                  )}
+                  {loading ? "Adding..." : "Add To Cart"}
+                </Button>
               </form>
             </div>
 
@@ -294,12 +336,12 @@ dispatch(findProductsById(data))
 
                 <div className="space-y-6">
                   <p className="text-base text-gray-900">
-                    {product.description}
+                    {products.product?.description}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-10">
+              {/* <div className="mt-10">
                 <h3 className="text-sm font-medium text-gray-900">
                   Highlights
                 </h3>
@@ -313,20 +355,20 @@ dispatch(findProductsById(data))
                     ))}
                   </ul>
                 </div>
-              </div>
+              </div> */}
 
-              <div className="mt-10">
+              {/* <div className="mt-10">
                 <h2 className="text-sm font-medium text-gray-900">Details</h2>
 
                 <div className="mt-4 space-y-6">
                   <p className="text-sm text-gray-600">{product.details}</p>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </section>
         {/* Rating and reviews */}
-        <section>
+        {/* <section className="pb-5">
           <h1 className="font-semibold text-lg pb-4">
             Recent Review and Rating
           </h1>
@@ -426,16 +468,16 @@ dispatch(findProductsById(data))
               </Grid>
             </Grid>
           </div>
-        </section>
+        </section> */}
         {/* Similar Product */}
-        <section className="pt-10">
+        {/* <section className="pt-10">
           <h1 className="py-5 text-xl font-bold">Similar Product</h1>
           <div className="flex flex-wrap space-y-5">
             {mens_kurta.map((item) => (
               <HomeSectionCard product={item} />
             ))}
           </div>
-        </section>
+        </section> */}
       </div>
     </div>
   );

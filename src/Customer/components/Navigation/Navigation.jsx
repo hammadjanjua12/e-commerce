@@ -14,7 +14,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import AuthModal from "../../Auth/AuthModal";
 import { useDispatch, useSelector } from "react-redux";
 import { getUser, logout } from "../../../State/Auth/Action";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import SearchBar from "../Search/Search";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import { updateWishlistCount } from "../../../State/Wishlist/Action";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -25,15 +28,20 @@ export default function Navigation() {
   const navigate = useNavigate();
   const [openAuthModal, setOpenAuthModal] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  // const [wishlistCount, setWishlistCount] = useState(0);
   const openUserMenu = Boolean(anchorEl);
   const jwt = localStorage.getItem("jwt");
   //access token
-  const {auth} = useSelector(store=>store);
+  const auth = useSelector((store) => store.auth);
   const dispatch = useDispatch();
   //redirect to home page
   const location = useLocation();
-  const {cart} = useSelector((store) => store.cart);
-  const totalItems = cart?.cartItems?.reduce((total, item) => total + item.quantity, 0);
+  const { cart } = useSelector((store) => store.cart);
+  
+  const totalItems = cart?.cartItems?.reduce(
+    (total, item) => total + item.quantity,
+    0
+  );
   // const totalItems = useSelector((store)=>store.cart?.cart)
 
   const handleUserClick = (event) => {
@@ -52,34 +60,60 @@ export default function Navigation() {
     setOpenAuthModal(false);
   };
 
+  const handleCategoryClick = (category, section, item) => {
+    console.log("Category:", category);
+    console.log("Section:", section);
+    console.log("Item:", item);
 
-  const handleCategoryClick = (categories, sections, item, close) => {
-    navigate(`/${categories.id}/${sections.id}/${item.id}`);
-    close();
+    // Add null or undefined checks before navigating
+    if (category && section && item) {
+      navigate(`/${category.id}/${section.id}/${item.id}`);
+      setOpen(false); // Close the mobile menu after redirection
+    } else {
+      console.error("One or more parameters are undefined or null.");
+    }
   };
 
-  useEffect(()=>{
-    if(jwt){
-        dispatch(getUser(jwt))
+  useEffect(() => {
+    if (jwt) {
+      dispatch(getUser(jwt));
     }
-},[jwt,auth.jwt])
+  }, [jwt, auth.jwt]);
 
-//to close auth modal or form
-  useEffect(()=>{
-    if (auth.user){
-      handleClose()
+  //to close auth modal or form
+  useEffect(() => {
+    if (auth.user) {
+      handleClose();
     }
-    if(location.pathname === "/login" || location.pathname === "/register"){
+    if (location.pathname === "/login" || location.pathname === "/register") {
       navigate(-1);
     }
-  },[auth.user])
+  }, [auth.user]);
 
   // for logout
-  const handleLougout =()=>{
-    dispatch(logout())
-    handleCloseMenu()
-  }
+  const handleLougout = () => {
+    dispatch(logout());
+    handleCloseMenu();
+  };
+  const { wishlist } = useSelector((state) => state.wishlist);
+  const [wishlistCount, setWishlistCount] = useState(() => {
+    // Retrieve wishlist count from localStorage on component mount
+    const storedCount = localStorage.getItem("wishlistCount");
+    return storedCount !== null ? parseInt(storedCount, 10) : 0;
+  });
 
+  useEffect(() => {
+    // Update local state and localStorage when the wishlist array changes
+    setWishlistCount(wishlist.length);
+    localStorage.setItem("wishlistCount", wishlist.length.toString());
+  }, [wishlist]);
+  
+
+  const handleWishlistClick = () => {
+    // Dispatch the updateWishlistCount action with the new count
+    dispatch(updateWishlistCount(wishlistCount + 1));
+    navigate("/Wishlist");
+  };
 
   return (
     <div className="bg-white">
@@ -108,12 +142,12 @@ export default function Navigation() {
               leaveFrom="translate-x-0"
               leaveTo="-translate-x-full"
             >
-              <Dialog.Panel className="relative flex w-full max-w-xs flex-col overflow-y-auto bg-white pb-12 shadow-xl">
+              <Dialog.Panel className="relative flex w-full max-w-xs flex-col overflow-y-auto bg-black text-white pb-12 shadow-xl">
                 <div className="flex px-4 pb-2 pt-5">
                   <button
                     type="button"
-                    className="relative -m-2 inline-flex items-center justify-center rounded-md p-2 text-gray-400"
-                    onClick={() => setOpen(false)}
+                    className="relative -m-2 inline-flex items-center justify-center rounded-md p-2 text-white"
+                    onClick={() => setOpen(true)}
                   >
                     <span className="absolute -inset-0.5" />
                     <span className="sr-only">Close menu</span>
@@ -123,7 +157,7 @@ export default function Navigation() {
 
                 {/* Links */}
                 <Tab.Group as="div" className="mt-2">
-                  <div className="border-b border-gray-200">
+                  <div className="border-b border-white">
                     <Tab.List className="-mb-px flex space-x-8 px-4">
                       {navigation.categories.map((category) => (
                         <Tab
@@ -136,6 +170,7 @@ export default function Navigation() {
                               "flex-1 whitespace-nowrap border-b-2 px-1 py-4 text-base font-medium"
                             )
                           }
+                          onClick={() => handleCategoryClick(category)}
                         >
                           {category.name}
                         </Tab>
@@ -148,56 +183,33 @@ export default function Navigation() {
                         key={category.name}
                         className="space-y-10 px-4 pb-8 pt-10"
                       >
-                        <div className="grid grid-cols-2 gap-x-4">
-                          {category.featured.map((item) => (
-                            <div
-                              key={item.name}
-                              className="group relative text-sm"
-                            >
-                              <div className="aspect-h-1 aspect-w-1 overflow-hidden rounded-lg bg-gray-100 group-hover:opacity-75">
-                                <img
-                                  src={item.imageSrc}
-                                  alt={item.imageAlt}
-                                  className="object-cover object-center"
-                                />
-                              </div>
-                              <a
-                                href={item.href}
-                                className="mt-6 block font-medium text-gray-900"
-                              >
-                                <span
-                                  className="absolute inset-0 z-10"
-                                  aria-hidden="true"
-                                />
-                                {item.name}
-                              </a>
-                              <p aria-hidden="true" className="mt-1">
-                                Shop now
-                              </p>
-                            </div>
-                          ))}
-                        </div>
                         {category.sections.map((section) => (
                           <div key={section.name}>
                             <p
-                              id={`${category.id}-${section.id}-heading-mobile`}
-                              className="font-medium text-gray-900"
+                              id={`${section.name}-heading-mobile`}
+                              className="font-medium text-white"
                             >
                               {section.name}
                             </p>
                             <ul
                               role="list"
-                              aria-labelledby={`${category.id}-${section.id}-heading-mobile`}
+                              aria-labelledby={`${section.name}-heading-mobile`}
                               className="mt-6 flex flex-col space-y-6"
                             >
                               {section.items.map((item) => (
                                 <li key={item.name} className="flow-root">
-                                  <a
-                                    href={item.href}
-                                    className="-m-2 block p-2 text-gray-500"
+                                  <p
+                                    onClick={() =>
+                                      handleCategoryClick(
+                                        category,
+                                        section,
+                                        item,
+                                      )
+                                    }
+                                    className="cursor-pointer hover:text-gray-800"
                                   >
                                     {item.name}
-                                  </a>
+                                  </p>
                                 </li>
                               ))}
                             </ul>
@@ -210,48 +222,22 @@ export default function Navigation() {
 
                 <div className="space-y-6 border-t border-gray-200 px-4 py-6">
                   {navigation.pages.map((page) => (
-                    <div key={page.name} className="flow-root">
-                      <a
-                        href={page.href}
-                        className="-m-2 block p-2 font-medium text-gray-900"
-                      >
-                        {page.name}
-                      </a>
-                    </div>
+                    <a
+                      key={page.name}
+                      href={page.href}
+                      className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800"
+                    >
+                      {page.name}
+                    </a>
                   ))}
                 </div>
-
-                {/* <div className="space-y-6 border-t border-gray-200 px-4 py-6">
-                  <div className="flow-root">
-                    <a href="#" className="-m-2 block p-2 font-medium text-gray-900">
-                      Sign in
-                    </a>
-                  </div>
-                  <div className="flow-root">
-                    <a href="#" className="-m-2 block p-2 font-medium text-gray-900">
-                      Create account
-                    </a>
-                  </div>
-                </div> */}
-
-                {/* <div className="border-t border-gray-200 px-4 py-6">
-                  <a href="#" className="-m-2 flex items-center p-2">
-                    <img
-                      src="https://tailwindui.com/img/flags/flag-canada.svg"
-                      alt=""
-                      className="block h-auto w-5 flex-shrink-0"
-                    />
-                    <span className="ml-3 block text-base font-medium text-gray-900">CAD</span>
-                    <span className="sr-only">, change currency</span>
-                  </a>
-                </div> */}
               </Dialog.Panel>
             </Transition.Child>
           </div>
         </Dialog>
       </Transition.Root>
 
-      <header className="relative bg-white">
+      <header className="relative bg-black">
         {/* <p className="flex h-10 items-center justify-center bg-indigo-600 px-4 text-sm font-medium text-white sm:px-6 lg:px-8">
           Get free delivery on orders over $100
         </p> */}
@@ -261,7 +247,7 @@ export default function Navigation() {
             <div className="flex h-16 items-center px-11">
               <button
                 type="button"
-                className="rounded-md bg-white p-2 text-gray-400 lg:hidden"
+                className="rounded-md bg-black p-2 text-gray-400 lg:hidden"
                 onClick={() => setOpen(true)}
               >
                 <span className="sr-only">Open menu</span>
@@ -270,10 +256,10 @@ export default function Navigation() {
 
               {/* Logo */}
               <Link to="/">
-              <div className="ml-4 flex lg:ml-0">
-                <span className="sr-only">Your Company</span>
-                <img src={Logo} alt="" className="h-8 w-auto mr-5" />
-              </div>
+                <div className="ml-4 flex lg:ml-0">
+                  <span className="sr-only">Your Company</span>
+                  <img src={Logo} alt="" className="h-8 w-auto mr-5" />
+                </div>
               </Link>
 
               {/* Flyout menus */}
@@ -288,7 +274,7 @@ export default function Navigation() {
                               className={classNames(
                                 open
                                   ? "border-indigo-600 text-indigo-600"
-                                  : "border-transparent text-gray-700 hover:text-gray-800",
+                                  : "border-transparent text-white hover:text-gray-800",
                                 "relative z-10 -mb-px flex items-center border-b-2 pt-px text-sm font-medium transition-colors duration-200 ease-out"
                               )}
                             >
@@ -305,17 +291,17 @@ export default function Navigation() {
                             leaveFrom="opacity-100"
                             leaveTo="opacity-0"
                           >
-                            <Popover.Panel className="absolute inset-x-0 top-full text-sm text-gray-500">
+                            <Popover.Panel className="absolute inset-x-0 top-full text-sm text-black">
                               {/* Presentational element used to render the bottom shadow, if we put the shadow on the actual panel it pokes out the top, so we use this shorter element to hide the top of the shadow */}
                               <div
                                 className="absolute inset-0 top-1/2 bg-white shadow"
                                 aria-hidden="true"
                               />
 
-                              <div className="relative bg-white">
+                              <div className="relative bg-gray-500">
                                 <div className="mx-auto max-w-7xl px-8">
                                   <div className="grid grid-cols-2 gap-x-8 gap-y-10 py-16">
-                                    <div className="col-start-2 grid grid-cols-2 gap-x-8">
+                                    {/* <div className="col-start-2 grid grid-cols-2 gap-x-8">
                                       {category.featured.map((item) => (
                                         <div
                                           key={item.name}
@@ -346,7 +332,7 @@ export default function Navigation() {
                                           </p>
                                         </div>
                                       ))}
-                                    </div>
+                                    </div> */}
                                     <div className="row-start-1 grid grid-cols-3 gap-x-8 gap-y-10 text-sm">
                                       {category.sections.map((section) => (
                                         <div key={section.name}>
@@ -362,10 +348,18 @@ export default function Navigation() {
                                             className="mt-6 space-y-6 sm:mt-4 sm:space-y-4"
                                           >
                                             {section.items.map((item) => (
-                                              <li key={item.name} className="flex">
+                                              <li
+                                                key={item.name}
+                                                className="flex"
+                                              >
                                                 <p
-                                                  onClick={() =>
-                                                    handleCategoryClick(category, section, item, close)
+                                                  onClick={(close) =>
+                                                    handleCategoryClick(
+                                                      category,
+                                                      section,
+                                                      item,
+                                                      close
+                                                    )
                                                   }
                                                   className="cursor-pointer hover:text-gray-800"
                                                 >
@@ -401,12 +395,12 @@ export default function Navigation() {
                 </div>
               </Popover.Group>
 
-              <div className="ml-auto flex items-center">
+              <div className="ml-auto flex items-center  text-white">
                 <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-                  {auth.user?.firstName? (
+                  {auth.user?.firstName ? (
                     <div>
                       <Avatar
-                        className="text-white"
+                        className="text-white "
                         onClick={handleUserClick}
                         aria-controls={open ? "basic-menu" : undefined}
                         aria-haspopup="true"
@@ -432,7 +426,9 @@ export default function Navigation() {
                         <MenuItem onClick={handleCloseUserMenu}>
                           Profile
                         </MenuItem>
-                        <MenuItem onClick={() => navigate("/account/order")}>My Order</MenuItem>
+                        <MenuItem onClick={() => navigate("/account/order")}>
+                          My Order
+                        </MenuItem>
                         <MenuItem onClick={handleLougout}>Logout</MenuItem>
                       </Menu>
                     </div>
@@ -447,33 +443,42 @@ export default function Navigation() {
                 </div>
 
                 {/* Search */}
-                <div className="flex lg:ml-6">
-                  <p className="p-2 text-gray-400 hover:text-gray-500">
-                    <span className="sr-only">Search</span>
-                    <MagnifyingGlassIcon
-                      className="h-6 w-6"
-                      aria-hidden="true"
-                    />
-                  </p>
-                </div>
+
+                <SearchBar />
 
                 {/* Cart */}
                 {/* <Link to="/cart"> */}
                 <div className="ml-4 flow-root lg:ml-6">
                   <a href="/" className="group -m-2 flex items-center p-2">
-                  <Link to="/cart">
-                    <ShoppingBagIcon
-                      className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
-                      aria-hidden="true"
-                    />
+                    <Link to="/cart">
+                      <ShoppingBagIcon
+                        className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                        aria-hidden="true"
+                      />
                     </Link>
                     <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                    {totalItems}
+                      {totalItems}
                     </span>
                     <span className="sr-only">{`items in cart, view bag (${totalItems} items)`}</span>
                   </a>
                 </div>
                 {/* </Link> */}
+              </div>
+              {/* Wishlist Icon */}
+              <div className="ml-4 flow-root lg:ml-6">
+                <Link
+                  to="/Wishlist"
+                  className="group -m-2 flex items-center p-2"
+                >
+                  <FavoriteIcon
+                    className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
+                    aria-hidden="true"
+                  />
+                  <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
+                    {wishlistCount}
+                  </span>
+                  <span className="sr-only">Wishlist</span>
+                </Link>
               </div>
             </div>
           </div>

@@ -42,15 +42,15 @@ const FooterLinks = [
 const FooterLinks1 = [
   {
     title: "Mens-Kurta",
-    link: "http://localhost:3000/men/clothing/mens_kurta",
+    link: "http://localhost:3000/men/clothing/kurta",
   },
   {
     title: "Men-Jeans",
-    link: "http://localhost:3000/men/clothing/men_jeans",
+    link: "http://localhost:3000/men/clothing/jeans",
   },
   {
     title: "Mens-Shirt",
-    link: "localhost:3000/men/clothing/shirt",
+    link: "http://localhost:3000/men/clothing/shirt",
   },
 ];
 

@@ -2,7 +2,7 @@ import { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Dialog, Disclosure, Menu, Transition } from "@headlessui/react";
-import Pagination from '@mui/material/Pagination';
+import Pagination from "@mui/material/Pagination";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import {
   ChevronDownIcon,
@@ -24,8 +24,8 @@ import FilterAltIcon from "@mui/icons-material/FilterAlt";
 import { findProducts } from "../../../State/Product/Action.js";
 
 const sortOptions = [
-  { name: "Price: Low to High", href: "#", current: false },
-  { name: "Price: High to Low", href: "#", current: false },
+  { name: "price: Low to High", value: "price_low", current: false },
+  { name: "price: High to Low", value: "price_high", current: false },
 ];
 
 function classNames(...classes) {
@@ -37,9 +37,9 @@ export default function Product() {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const param = useParams()
-  const {products} = useSelector(store=>store)
-
+  const param = useParams();
+  const { products } = useSelector((store) => store);
+  // console.log("ALL Products from store ",products)
 
   const decodedQueryString = decodeURIComponent(location.search);
   const searchParamms = new URLSearchParams(decodedQueryString);
@@ -52,6 +52,7 @@ export default function Product() {
   const stock = searchParamms.get("stock");
 
   const handleFilter = (value, sectionId) => {
+    console.log('Filter clicked:', value, sectionId);
     const searchParams = new URLSearchParams(location.search);
     let filterValue = searchParams.getAll(sectionId);
 
@@ -75,35 +76,57 @@ export default function Product() {
   const handleRadioFilterChange = (e, sectionId) => {
     const searchParamms = new URLSearchParams(location.search);
 
-    searchParamms.set(sectionId, e.target.value)
+    searchParamms.set(sectionId, e.target.value);
     const query = searchParamms.toString();
     navigate({ search: `?${query}` });
   };
 
   useEffect(() => {
-    const [minPrice, maxPrice] = priceValue === null ? [0,0] : priceValue.split("-").map(Number);
+    const [minPrice, maxPrice] =
+      priceValue === null ? [0, 100000] : priceValue.split("-").map(Number);
     const data = {
       category: param.lavelThree,
-      colors: colorValue || [] ,
+      colors: colorValue || [],
       size: sizeValue || "",
-      minPrice: minPrice || 0,  // Ensure minPrice is provided or default to 0
-      maxPrice: maxPrice || 0,  // Ensure maxPrice is provided or default to 0
+      minPrice: minPrice || 0,
+      maxPrice: maxPrice || 0,
       minDiscount: discount || "",
-      sort: sortValue || "price_low",
+      sort: sortValue,
       pageNumber: pageNumber - 1,
-      pageSize: 7,
-      stock: stock ,
+      pageSize: 20,
+      stock: stock,
     };
+
     dispatch(findProducts(data));
-  }, [param.lavelThree,colorValue,sizeValue,priceValue,discount,sortValue,pageNumber,stock]);
+  }, [
+    param.lavelThree,
+    colorValue,
+    sizeValue,
+    priceValue,
+    discount,
+    sortValue,
+    pageNumber,
+    stock,
+  ]);
 
   const handlePaginationChange = (event, value) => {
-  const searchParams = new URLSearchParams(location.search);
-  searchParams.set("pageNumber", value);
-  const query = searchParams.toString();
-  navigate({ search: `?${query}` });
-};
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set("pageNumber", value);
+    const query = searchParams.toString();
+    navigate({ search: `?${query}` });
+  };
 
+  const handleSortChange = (value) => {
+    console.log("Sorting value selected:", value);
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set("sort", value);
+    const query = searchParams.toString();
+    console.log("Updated query:", query);
+    navigate({ search: `?${query}` });
+
+    // Dispatch an action to fetch products with the updated sorting value
+    dispatch(findProducts({ sort: value }));
+  };
 
   return (
     <div className="bg-white">
@@ -190,6 +213,9 @@ export default function Product() {
                                     className="flex items-center"
                                   >
                                     <input
+                                      onChange={() =>
+                                        handleFilter(option.value, section.id)
+                                      }
                                       id={`filter-mobile-${section.id}-${optionIdx}`}
                                       name={`${section.id}[]`}
                                       defaultValue={option.value}
@@ -248,22 +274,21 @@ export default function Product() {
                   <Menu.Items className="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <div className="py-1">
                       {sortOptions.map((option) => (
-                        <Menu.Item key={option.name}>
-                          {({ active }) => (
-                            <a
-                              href={option.href}
-                              className={classNames(
-                                option.current
-                                  ? "font-medium text-gray-900"
-                                  : "text-gray-500",
-                                active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm"
-                              )}
-                            >
-                              {option.name}
-                            </a>
-                          )}
-                        </Menu.Item>
+                       <Menu.Item key={option.name}>
+                       {({ active }) => (
+                         <button
+                           type="button"
+                           className={classNames(
+                             option.current ? "font-medium text-gray-900" : "text-gray-500",
+                             active ? "bg-gray-100" : "",
+                             "block px-4 py-2 text-sm"
+                           )}
+                           onClick={() => handleSortChange(option.value)}
+                         >
+                           {option.name}
+                         </button>
+                       )}
+                     </Menu.Item>
                       ))}
                     </div>
                   </Menu.Items>
@@ -361,7 +386,7 @@ export default function Product() {
                     )}
                   </Disclosure>
                 ))}
-                {SingleFilter.map((section) => (
+                {/* {filters.map((section) => (
                   <Disclosure
                     as="div"
                     key={section.id}
@@ -418,13 +443,14 @@ export default function Product() {
                         </FormControl>
                       </>
                     )}
-                  </Disclosure>
-                ))}
+                  </Disclosure> */}
+                {/* ))} */}
               </form>
               {/* Product grid */}
               <div className="lg:col-span-4 w-full">
                 <div className="flex flex-wrap justify-center bg-white py-5">
-                {products.products && products.products?.content?.map((item) => (
+                  {products.products &&
+                    products.products?.content?.map((item) => (
                       <div key={item._id} className="m-2">
                         <ProductCard product={item} />
                       </div>
@@ -435,8 +461,11 @@ export default function Product() {
           </section>
           <section className="w-full px=[3.6rem]">
             <div className="px-4 py-5 flex justify-center">
-            <Pagination count={products.products?.totalPages}
-            onChange={handlePaginationChange} color="secondary" />
+              <Pagination
+                count={products.products?.totalPages}
+                onChange={handlePaginationChange}
+                color="secondary"
+              />
             </div>
           </section>
         </main>

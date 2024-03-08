@@ -21,7 +21,7 @@ const ProductCard = ({ product }) => {
         </div>
         <div className="flex item-center space-x-2">
           <p className="font-semibold">{product.discountedPrice}</p>
-          <p className="opacity-50">{product.price}</p>
+          <p className="opacity-50 line-through">{product.price}</p>
           <p className="text-green-600 font-semibold">{product.discountPersent}</p>
         </div>
       </div>

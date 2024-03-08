@@ -9,11 +9,13 @@ import ProductDetails from "../Customer/components/ProductDetails/ProductDetails
 import Checkout from "../Customer/components/Checkout/Checkout";
 import Order from "../Customer/components/Order/Order";
 import OrderDetails from "../Customer/components/Order/OrderDetails";
-const CustomerRoutes = () => {
+import Wishlist from "../Customer/components/Wishlist/Wishlist";
+
+const CustomerRoutes = ({ showNavigation }) => {
   return (
     <div>
       <div>
-        <Navigation />
+      {showNavigation && <Navigation />}
       </div>
       <Routes>
         <Route path="/login" element={<HomePage />}></Route>
@@ -32,14 +34,10 @@ const CustomerRoutes = () => {
           path="/account/order/:orderId"
           element={<OrderDetails />}
         ></Route>
-        {/*
-      
-        <Order/>
-        <OrderDetails/> 
-         */}
+        <Route path="/Wishlist" element={<Wishlist />} />
       </Routes>
       <div>
-        <Footer />
+      {showNavigation && <Footer />}
       </div>
     </div>
   );

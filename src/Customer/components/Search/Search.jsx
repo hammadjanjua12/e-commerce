@@ -40,9 +40,12 @@ const SearchBar = () => {
     }
 
     try {
-      const response = await api.get(`/api/search?query=${query}`);
+      const response = await api.get(
+        `http://localhost:5454/api/search?${query}`
+      );
       const results = response.data;
       setSearchResults(results);
+      // console.log("Result of Api",results)
     } catch (error) {
       console.error("Error fetching search results:", error);
     }
@@ -50,11 +53,15 @@ const SearchBar = () => {
 
   const handleResultClick = (result) => {
     navigate(`/product/${result._id}`);
+    // console.log("Result on Click",result._id);
     closeSearch();
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "ArrowDown" && selectedResultIndex < searchResults.length - 1) {
+    if (
+      e.key === "ArrowDown" &&
+      selectedResultIndex < searchResults.length - 1
+    ) {
       setSelectedResultIndex((prevIndex) => prevIndex + 1);
     } else if (e.key === "ArrowUp" && selectedResultIndex > 0) {
       setSelectedResultIndex((prevIndex) => prevIndex - 1);
@@ -65,7 +72,10 @@ const SearchBar = () => {
 
   useEffect(() => {
     const handleOutsideClick = (e) => {
-      if (searchInputRef.current && !searchInputRef.current.contains(e.target)) {
+      if (
+        searchInputRef.current &&
+        !searchInputRef.current.contains(e.target)
+      ) {
         closeSearch();
       }
     };
@@ -92,7 +102,7 @@ const SearchBar = () => {
             <div className="flex justify-between items-center mb-2">
               <input
                 type="text"
-                className="border border-gray-300 p-2 w-full"
+                className="border text-black border-gray-300 p-2 w-full"
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={handleSearchChange}
@@ -101,12 +111,12 @@ const SearchBar = () => {
               />
               <button
                 onClick={closeSearch}
-                className="text-gray-500 hover:text-gray-600 focus:outline-none"
+                className="text-black hover:text-gray-600 focus:outline-none"
               >
                 <Close sx={{ fontSize: 24 }} />
               </button>
             </div>
-            {/* Display search results */}
+            // Display search results
             {searchResults.length > 0 && (
               <ul>
                 {searchResults.map((result, index) => (
@@ -115,10 +125,11 @@ const SearchBar = () => {
                     onClick={() => handleResultClick(result)}
                     onMouseEnter={() => setSelectedResultIndex(index)}
                     onMouseLeave={() => setSelectedResultIndex(-1)}
-                    style={{
-                      cursor: "pointer",
-                      background: index === selectedResultIndex ? "#e2e8f0" : "transparent",
-                    }}
+                    className={`text-justify text-black hover:bg-gray-200 hover:text-indigo-600 p-2 rounded-md ${
+                      index === selectedResultIndex
+                        ? "bg-gray-200 text-indigo-600"
+                        : ""
+                    }`}
                   >
                     {result.title}
                   </li>

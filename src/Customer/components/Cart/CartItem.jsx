@@ -33,9 +33,9 @@ const CartItem = ({item}) => {
           <p className="opacity-70 "> Color: {item.product?.color}</p>
           <p className="opacity-70 mt-2">Seller: {item.product?.brand}</p>
           <div className="flex space-x-5 items-center  text-gray-900 pt-6">
-            <p className="font-semibold">${item.price}</p>
-            <p className="opacity-50 line-through">${item.totaldiscountedPrice}</p>
-            <p className="text-green-600 font-semibold">{item.discountedPresent}% Off</p>
+            <p className="font-semibold">{item.product?.price}</p>
+            <p className="opacity-50 line-through">{item.product?.discountedPrice}</p>
+            <p className="text-green-600 font-semibold">{item.product?.discountPercent}% Off</p>
           </div>
         </div>
       </div>

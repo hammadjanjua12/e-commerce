@@ -50,15 +50,15 @@ const Cart = () => {
                 <span>${cart.cart?.totalPrice}</span> */}
               </div>
               <div className="flex justify-between pt-3 ">
-                <span>Delivery Charge</span>
-                <span className="text-green-600">Free</span>
+                <span className="pl-5">Delivery Charge</span>
+                <span className="text-green-600 pr-5">Free</span>
               </div>
-              <div className="flex justify-between pt-3 ">
-                <span>Total Items</span>
+              <div className="flex justify-between pt-3 pr-5 ">
+                <span className="pl-5">Total Items</span>
                 <span className="text-green-600">{cart.cart?.totalItem}</span>
               </div>
-              <div className="flex justify-between pt-3 font-bold">
-                <span>Total Amount</span>
+              <div className="flex justify-between pt-3 font-bold pr-5">
+                <span className="pl-5">Total Amount</span>
                 <span className="text-green-600">${cart.cart?.totalPrice}</span>
               </div>
             </div>

@@ -10,6 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { findProductsById } from "../../../State/Product/Action";
 import { addItemToCart } from "../../../State/Cart/Action";
+import { getUser } from "../../../State/Auth/Action";
 import { Snackbar } from "@mui/material";
 
 const product = {
@@ -75,26 +76,34 @@ export default function ProductDetails() {
   const params = useParams();
   const dispatch = useDispatch();
   const { products } = useSelector((store) => store);
+  const { user } = useSelector((state) => state.auth);
 
   // console.log("params------", params.productId);
   const handleAddTocart = async () => {
     try {
+      if (!user) {
+        // If user is not logged in, redirect to login page
+        navigate("/register");
+        console.log("User add to cart",user)
+        return;
+      }
+  
       if (!selectedSize) {
         setError("Please select a size");
         setTimeout(() => {
           setError(null);
-        }, 10000); // Hide error message after 3 seconds
+        }, 10000); // Hide error message after 10 seconds
         return;
       }
-
+  
       setLoading(true);
-
+  
       const data = { productId: params.productId, size: selectedSize.name };
       console.log("data___", data);
-
+  
       // Assuming addItemToCart returns a Promise
       await dispatch(addItemToCart(data));
-
+  
       setLoading(false);
       navigate("/cart");
     } catch (error) {
@@ -102,6 +111,7 @@ export default function ProductDetails() {
       setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     const data = { productId: params.productId };
@@ -186,23 +196,26 @@ export default function ProductDetails() {
             <div className="mt-4 lg:row-span-3 lg:mt-0">
               <h2 className="sr-only">Product information</h2>
               <div className="flex space-x-5 items-center text-lg lg:text-xl text-gray-900 mt-6">
-                <p className="font-semibold text-lg text-green-600">
-                  <span className="text-sm bg-yellow-500 text-white px-2 py-1 rounded-full mr-1">
-                    Sale
-                  </span>
-                  {products.product?.discountedPrice}
-                </p>
+                {products.product?.discountedPrice ? (
+                  <p className="font-semibold text-lg text-green-600">
+                    <span className="text-sm bg-yellow-500 text-white px-2 py-1 rounded-full mr-1">
+                      Sale
+                    </span>
+                    {products.product?.discountedPrice}
+                  </p>
+                ) : (
+                  <p className="font-semibold text-lg text-gray-900">
+                    {products.product?.price}
+                  </p>
+                )}
 
-                <p className="opacity-50 line-through">
-                  {products.product?.price}
-                </p>
                 <p className="text-green-600 font-semibold">
-                  {products.product?.discountPersent}
+                  {products.product?.discountPercent}%OFF
                 </p>
               </div>
 
               {/* Reviews */}
-              <div className="mt-6">
+              {/* <div className="mt-6">
                 <div className="flex item-center space-x-3">
                   <Rating name="read-only" value={3.5} readOnly />
                   <p className="opacity-50 text-sm">5652 Rating</p>
@@ -211,7 +224,7 @@ export default function ProductDetails() {
                     38 Review
                   </p>
                 </div>
-              </div>
+              </div> */}
 
               <form className="mt-10">
                 {/* Sizes */}

@@ -27,7 +27,6 @@ export const addToWishlist = (productId) => async (dispatch) => {
 
   export const removeFromWishlist = (productId) => async (dispatch) => {
     try {
-      console.log('Removing product from wishlist. Product ID:', productId);
   
       // Make the API request to remove the item
       await api.delete(`${API_BASE_URL}/api/wishlist/${productId}`);

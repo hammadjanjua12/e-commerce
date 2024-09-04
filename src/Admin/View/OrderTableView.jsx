@@ -20,14 +20,14 @@ import {
 
 const OrdersTable = () => {
   const [anchorEl, setAnchorEl] = React.useState([]);
-  const open = Boolean(anchorEl);
+  // const open = Boolean(anchorEl);
 
 
-  const handleClick = (event,index) => {
-    const newAnchorElArray = [...anchorEl];
-    newAnchorElArray[index]= event.currentTarget
-    setAnchorEl(newAnchorElArray);
-  };
+  // const handleClick = (event,index) => {
+  //   const newAnchorElArray = [...anchorEl];
+  //   newAnchorElArray[index]= event.currentTarget
+  //   setAnchorEl(newAnchorElArray);
+  // };
   const handleClose = (index) => {
     const newAnchorElArray = [...anchorEl];
     newAnchorElArray[index]= null
@@ -43,26 +43,26 @@ const OrdersTable = () => {
   }, [adminOrder.confirmed,adminOrder.shipped,adminOrder.delivered,adminOrder.deleteOrder]);
   // console.log("admin Orders", adminOrder);
 
-  const handleShipedOrder=(orderId)=>{
-    dispatch(shipOrder(orderId))
-    console.log("handle shipped Order",orderId)
-    handleClose()
-  }
+  // const handleShipedOrder=(orderId)=>{
+  //   dispatch(shipOrder(orderId))
+  //   console.log("handle shipped Order",orderId)
+  //   handleClose()
+  // }
 
-  const handleConfirmedOrder=(orderId)=>{
-    dispatch(confirmOrder(orderId))
-    console.log("handle Confirmed Order",orderId)
-    handleClose()
-  }
-  const handleDeliveredOrder=(orderId)=>{
-    dispatch(deliverOrder(orderId))
-    console.log("handle Delivered Order",orderId)
-    handleClose()
-  }
+  // const handleConfirmedOrder=(orderId)=>{
+  //   dispatch(confirmOrder(orderId))
+  //   console.log("handle Confirmed Order",orderId)
+  //   handleClose()
+  // }
+  // const handleDeliveredOrder=(orderId)=>{
+  //   dispatch(deliverOrder(orderId))
+  //   console.log("handle Delivered Order",orderId)
+  //   handleClose()
+  // }
 
-  const handleDeleteOrder=(orderId)=>{
-    dispatch(deleteOrder(orderId))
-  }
+  // const handleDeleteOrder=(orderId)=>{
+  //   dispatch(deleteOrder(orderId))
+  // }
   
   return (
     <div className="p-10">

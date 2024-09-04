@@ -37,7 +37,7 @@ export default function Navigation() {
   //redirect to home page
   const location = useLocation();
   const { cart } = useSelector((store) => store.cart);
-  
+
   const totalItems = cart?.cartItems?.reduce(
     (total, item) => total + item.quantity,
     0
@@ -99,15 +99,17 @@ export default function Navigation() {
   const [wishlistCount, setWishlistCount] = useState(() => {
     // Retrieve wishlist count from localStorage on component mount
     const storedCount = localStorage.getItem("wishlistCount");
-    return storedCount !== null ? parseInt(storedCount, 10) : 0;
+    return storedCount !== null ? parseInt(storedCount, 10) : 0; // Ensure that the default value is 0
   });
 
   useEffect(() => {
     // Update local state and localStorage when the wishlist array changes
     setWishlistCount(wishlist.length);
     localStorage.setItem("wishlistCount", wishlist.length.toString());
-  }, [wishlist]);
-  
+    
+    // Dispatch the updateWishlistCount action with the new count
+    dispatch(updateWishlistCount(wishlist.length));
+  }, [wishlist, dispatch]);
 
   const handleWishlistClick = () => {
     // Dispatch the updateWishlistCount action with the new count
@@ -159,7 +161,7 @@ export default function Navigation() {
                 <Tab.Group as="div" className="mt-2">
                   <div className="border-b border-white">
                     <Tab.List className="-mb-px flex space-x-8 px-4">
-                      {navigation.categories.map((category) => (
+                      {navigation.categories?.map((category) => (
                         <Tab
                           key={category.name}
                           className={({ selected }) =>
@@ -178,7 +180,7 @@ export default function Navigation() {
                     </Tab.List>
                   </div>
                   <Tab.Panels as={Fragment}>
-                    {navigation.categories.map((category) => (
+                    {navigation.categories?.map((category) => (
                       <Tab.Panel
                         key={category.name}
                         className="space-y-10 px-4 pb-8 pt-10"
@@ -203,7 +205,7 @@ export default function Navigation() {
                                       handleCategoryClick(
                                         category,
                                         section,
-                                        item,
+                                        item
                                       )
                                     }
                                     className="cursor-pointer hover:text-gray-800"
@@ -220,7 +222,7 @@ export default function Navigation() {
                   </Tab.Panels>
                 </Tab.Group>
 
-                <div className="space-y-6 border-t border-gray-200 px-4 py-6">
+                {/* <div className="space-y-6 border-t border-gray-200 px-4 py-6">
                   {navigation.pages.map((page) => (
                     <a
                       key={page.name}
@@ -230,14 +232,14 @@ export default function Navigation() {
                       {page.name}
                     </a>
                   ))}
-                </div>
+                </div> */}
               </Dialog.Panel>
             </Transition.Child>
           </div>
         </Dialog>
       </Transition.Root>
 
-      <header className="relative bg-black">
+      <header className="relative bg-white">
         {/* <p className="flex h-10 items-center justify-center bg-indigo-600 px-4 text-sm font-medium text-white sm:px-6 lg:px-8">
           Get free delivery on orders over $100
         </p> */}
@@ -265,7 +267,7 @@ export default function Navigation() {
               {/* Flyout menus */}
               <Popover.Group className="hidden lg:ml-8 lg:block lg:self-stretch z-10">
                 <div className="flex h-full space-x-8">
-                  {navigation.categories.map((category) => (
+                  {navigation.categories?.map((category) => (
                     <Popover key={category.name} className="flex">
                       {({ open, close }) => (
                         <>
@@ -274,7 +276,7 @@ export default function Navigation() {
                               className={classNames(
                                 open
                                   ? "border-indigo-600 text-indigo-600"
-                                  : "border-transparent text-white hover:text-gray-800",
+                                  : "border-transparent text-gray-700 hover:text-gray-800",
                                 "relative z-10 -mb-px flex items-center border-b-2 pt-px text-sm font-medium transition-colors duration-200 ease-out"
                               )}
                             >
@@ -383,7 +385,7 @@ export default function Navigation() {
                     </Popover>
                   ))}
 
-                  {navigation.pages.map((page) => (
+                  {/* {navigation.pages.map((page) => (
                     <a
                       key={page.name}
                       href={page.href}
@@ -391,7 +393,7 @@ export default function Navigation() {
                     >
                       {page.name}
                     </a>
-                  ))}
+                  ))} */}
                 </div>
               </Popover.Group>
 

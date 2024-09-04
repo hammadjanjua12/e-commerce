@@ -9,7 +9,7 @@ import {
   ListItemButton,
   ListItemIcon,
   CssBaseline,
-  Drawer,
+  // Drawer,
   ListItemText,
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -39,8 +39,8 @@ const menu = [
 
 const Admin = () => {
   const theme = useTheme();
-  const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
-  const [sideBarVisible, setSideBarVisible] = useState(false);
+  // const isLargeScreen = useMediaQuery(theme.breakpoints.up("lg"));
+  // const [sideBarVisible, setSideBarVisible] = useState(false);
   const navigate = useNavigate();
 
   const isAuthenticated = useSelector((state) => state.token !== null);

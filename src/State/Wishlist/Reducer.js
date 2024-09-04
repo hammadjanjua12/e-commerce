@@ -9,7 +9,7 @@ const storedWishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
 
 const initialState = {
   wishlist: storedWishlist,
-  wishlistCount: storedWishlist.length,
+  wishlistCount: 0,
   message: '',
 };
 
@@ -33,20 +33,14 @@ const wishlistReducer = (state = initialState, action) => {
         wishlistCount: action.payload,
       };
       // Update REMOVE_FROM_WISHLIST_SUCCESS case in your reducer
-case REMOVE_FROM_WISHLIST_SUCCESS:
-  const productIdToRemove = action.payload;
-  const updatedWishlist = state.wishlist.map(item =>
-    item.product._id === productIdToRemove
-      ? { ...item, isInWishlist: false } // Set isInWishlist to false for the removed item
-      : item
-  );
-
-  localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
-
-  return {
-    ...state,
-    wishlist: updatedWishlist,
-  };
+      case REMOVE_FROM_WISHLIST_SUCCESS:
+        const updatedWishlist = state.wishlist.filter(item => item._id !== action.payload);
+        localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+        return {
+          ...state,
+          wishlist: updatedWishlist,
+        };
+      
 
       
 

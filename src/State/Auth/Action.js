@@ -1,5 +1,5 @@
-import axios from "axios";
-import { API_BASE_URL } from "../../config/apiConfig";
+// import axios from "axios";
+import { API_BASE_URL, api } from "../../config/apiConfig";
 import { GET_USER_FAILURE, GET_USER_REQUEST, GET_USER_SUCCESS, LOGIN_FAILURE, LOGIN_REQUEST, LOGIN_SUCCESS, LOGOUT, REGISTER_FAILURE, REGISTER_REQUEST, REGISTER_SUCCESS } from "./ActionType";
 //get and save token
 const token = localStorage.getItem("jwt")
@@ -13,7 +13,7 @@ const registerfaliure = (error) => ({type:REGISTER_FAILURE,payload:error});
 export const register = (userData) => async (dispatch) =>{
     dispatch(registerRequest())
     try {
-        const response = await axios.post(`${API_BASE_URL}/auth/signup`,userData)
+        const response = await api.post(`${API_BASE_URL}/auth/signup`,userData)
         const user = response.data;
         if(user.jwt){
             localStorage.setItem("jwt",user.jwt)
@@ -33,7 +33,7 @@ const loginfaliure = (error) => ({type:LOGIN_FAILURE,payload:error});
 export const login = (userData )=> async (dispatch) =>{
     dispatch(loginRequest())
     try {
-        const response = await axios.post(`${API_BASE_URL}/auth/signin`,userData)
+        const response = await api.post(`${API_BASE_URL}/auth/signin`,userData)
         const user = response.data;
         if(user.jwt){
             localStorage.setItem("jwt",user.jwt)
@@ -55,13 +55,13 @@ const getUserfaliure = (error) => ({type:GET_USER_FAILURE,payload:error});
 export const getUser = (jwt) => async (dispatch) =>{
     dispatch(getUserRequest())
     try {
-        const response = await axios.get(`${API_BASE_URL}/api/users/profile`,{
+        const response = await api.get(`${API_BASE_URL}/api/users/profile`,{
             headers:{
                 "Authorization":`Bearer ${jwt}`
             }
         })
         const user = response.data;
-        // console.log("Profiles",user)
+        console.log("Profiles",user)
         dispatch(getUsersuccess(user))
     } catch (error) {
         dispatch(getUserfaliure(error.message))

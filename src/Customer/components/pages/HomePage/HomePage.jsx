@@ -9,6 +9,7 @@ const HomePage = () => {
     { url: "http://localhost:5454/api/products?category=women_dress", sectionName: "Womens Dresses" },
     { url: "http://localhost:5454/api/products?category=shirt", sectionName: "Men's Shirt" },
     { url: "http://localhost:5454/api/products?category=women_jeans", sectionName: "Women Jeans" },
+    { url: "http://localhost:5454/api/products?category=jackets", sectionName: "Mens Jackets" },
     // Add more API URLs and section names as needed
   ];
   return (

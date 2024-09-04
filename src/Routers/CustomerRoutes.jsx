@@ -10,36 +10,41 @@ import Checkout from "../Customer/components/Checkout/Checkout";
 import Order from "../Customer/components/Order/Order";
 import OrderDetails from "../Customer/components/Order/OrderDetails";
 import Wishlist from "../Customer/components/Wishlist/Wishlist";
+import LoginForm from "../Customer/Auth/LoginForm";
+import RegisterForm from "../Customer/Auth/RegisterForm";
+import TopButton from "../Customer/components/TopButton/TopButton"; 
 
 const CustomerRoutes = ({ showNavigation }) => {
   return (
-    <div>
+    <>
       <div>
-      {showNavigation && <Navigation />}
-      </div>
-      <Routes>
-        <Route path="/login" element={<HomePage />}></Route>
-        <Route path="/register" element={<HomePage />}></Route>
+        <div>{showNavigation && <Navigation />}</div>
+        <Routes>
+          <Route path="/login" element={<LoginForm />}></Route>
+        <Route path="/register" element={<RegisterForm />}></Route>
 
-        <Route path="/" element={<HomePage />}></Route>
-        <Route path="/cart" element={<Cart />}></Route>
-        <Route
-          path="/:lavelOne/:lavelTwo/:lavelThree"
-          element={<Product />}
-        ></Route>
-        <Route path="/product/:productId" element={<ProductDetails />}></Route>
-        <Route path="/checkout" element={<Checkout />}></Route>
-        <Route path="/account/order" element={<Order />}></Route>
-        <Route
-          path="/account/order/:orderId"
-          element={<OrderDetails />}
-        ></Route>
-        <Route path="/Wishlist" element={<Wishlist />} />
-      </Routes>
-      <div>
-      {showNavigation && <Footer />}
+          <Route path="/" element={<HomePage />}></Route>
+          <Route path="/cart" element={<Cart />}></Route>
+          <Route
+            path="/:lavelOne/:lavelTwo/:lavelThree"
+            element={<Product />}
+          ></Route>
+          <Route
+            path="/product/:productId"
+            element={<ProductDetails />}
+          ></Route>
+          <Route path="/checkout" element={<Checkout />}></Route>
+          <Route path="/account/order" element={<Order />}></Route>
+          <Route
+            path="/account/order/:orderId"
+            element={<OrderDetails />}
+          ></Route>
+          <Route path="/Wishlist" element={<Wishlist />} />
+        </Routes>
+        <div>{showNavigation && <Footer />}</div>
+        <TopButton />
       </div>
-    </div>
+    </>
   );
 };
 

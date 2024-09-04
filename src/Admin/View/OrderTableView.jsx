@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { confirmOrder, deleteOrder, deliverOrder, getOrders, shipOrder } from "../../State/Admin/Order/Action";
+import {   getOrders,  } from "../../State/Admin/Order/Action";
 import {
   Avatar,
   AvatarGroup,
@@ -28,11 +28,11 @@ const OrdersTable = () => {
   //   newAnchorElArray[index]= event.currentTarget
   //   setAnchorEl(newAnchorElArray);
   // };
-  const handleClose = (index) => {
-    const newAnchorElArray = [...anchorEl];
-    newAnchorElArray[index]= null
-    setAnchorEl(newAnchorElArray);
-  };
+  // const handleClose = (index) => {
+  //   const newAnchorElArray = [...anchorEl];
+  //   newAnchorElArray[index]= null
+  //   setAnchorEl(newAnchorElArray);
+  // };
 
   const dispatch = useDispatch();
 

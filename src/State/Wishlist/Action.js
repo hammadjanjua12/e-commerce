@@ -14,7 +14,7 @@ export const addToWishlist = (productId) => async (dispatch) => {
   
   export const getWishlist = () => async (dispatch) => {
     try {
-      const response = await api.get(`${API_BASE_URL}/api/wishlist`);
+      const response = await api.get(`${API_BASE_URL}api/wishlist`);
       dispatch({ type: GET_WISHLIST_SUCCESS, payload: response.data });
     } catch (error) {
       console.error(error);

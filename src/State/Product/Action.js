@@ -21,7 +21,7 @@ export const findAllProducts = (reqData) => async (dispatch) => {
     pageSize,
   } = reqData;
   try {
-    const {data} = await api.get(`${API_BASE_URL}/api/products?&pageNumber=${pageNumber}&pageSize=${pageSize}`)
+    const {data} = await api.get(`${API_BASE_URL}api/products?&pageNumber=${pageNumber}&pageSize=${pageSize}`)
     
     console.log("All Product Data",data)
     dispatch({ type: FIND_PRODUCTS_SUCCESS, payload: data });

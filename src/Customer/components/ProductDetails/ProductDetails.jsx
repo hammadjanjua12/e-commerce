@@ -81,12 +81,12 @@ export default function ProductDetails() {
   // console.log("params------", params.productId);
   const handleAddTocart = async () => {
     try {
-      if (!user) {
-        // If user is not logged in, redirect to login page
-        navigate("/register");
-        console.log("User add to cart",user)
-        return;
-      }
+      // if (!user) {
+      //   // If user is not logged in, redirect to login page
+      //   // navigate("/register");
+      //   console.log("User add to cart",user)
+      //   return;
+      // }
   
       if (!selectedSize) {
         setError("Please select a size");
